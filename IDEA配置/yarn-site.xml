@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+
+<!-- Site specific YARN configuration properties -->
+ <property>
+                <name>yarn.resourcemanager.hostname</name>
+                <value>hadoop01</value>
+        </property>
+        <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+        </property>
+        <property>
+                <name>yarn.application.classpath</name>
+                <value>/export/servers/hadoop-3.3.4/etc/hadoop:/export/servers/hadoop-3.3.4/share/hadoop/common/lib/*:/export/servers/hadoop-3.3.4/share/hadoop/common/*:/export/servers/hadoop-3.3.4/share/hadoop/hdfs:/export/servers/hadoop-3.3.4/share/hadoop/hdfs/lib/*:/export/servers/hadoop-3.3.4/share/hadoop/hdfs/*:/export/servers/hadoop-3.3.4/share/hadoop/mapreduce/*:/export/servers/hadoop-3.3.4/share/hadoop/yarn:/export/servers/hadoop-3.3.4/share/hadoop/yarn/lib/*:/export/servers/hadoop-3.3.4/share/hadoop/yarn/*
+                </value>
+        </property>
+<property>
+     <name>yarn.nodemanager.resource.memory-mb</name>
+     <value>20480</value>
+     <discription>每个节点可用内存,单位MB</discription>
+ </property>
+ <property>
+    <name>yarn.scheduler.minimum-allocation-mb</name>
+    <value>2048</value>
+    <discription>单个任务可申请最少内存，默认1024MB</discription>
+ </property>
+
+</configuration>

@@ -1,0 +1,15 @@
+﻿特征,重要性
+drive_sales,0.24339192267408122
+battery_sales,0.23950127268298863
+price_sales,0.22969360491686616
+smart_sales,0.21502118212188873
+charging_sales,0.07236810084365841
+avg_battery,1.4839323432894262e-05
+battery_efficiency,4.531330942575922e-06
+avg_profit_margin,2.6037911474496006e-06
+avg_battery_capacity,1.0509494298056889e-06
+avg_market_acceptance,6.469217431981295e-07
+range_preference,2.4237421242514346e-07
+avg_tech_score,2.0696085996580165e-09
+performance_score,0.0
+energy_efficiency,0.0

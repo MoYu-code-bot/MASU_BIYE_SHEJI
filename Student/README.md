@@ -21,5 +21,5 @@
 ## 下载完成执行npm run serve运行前端项目
 <img width="1818" height="705" alt="image" src="https://github.com/user-attachments/assets/62e0b9dc-2f39-4793-9b9a-dc79175e3d33" />
 
-## 点击连接即可跳转项目UI界面中
+## 点击链接即可跳转项目UI界面中
 <img width="2010" height="1004" alt="image" src="https://github.com/user-attachments/assets/f519dae0-fa11-4546-9656-b0c1175c86cb" />

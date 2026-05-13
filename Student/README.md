@@ -16,8 +16,8 @@
 ## 前端启动配置
 ## 打开Terminal，并切换至前端项目中
 <img width="1785" height="567" alt="image" src="https://github.com/user-attachments/assets/a9db759d-3fc5-4bf2-a2f6-42efbee1d493" />
-## 使用npm进行下载，如果提示没有npm，需要自行前往官网下载
 
+## 使用npm进行下载，如果提示没有npm，需要自行前往官网下载
 ## 下载完成执行npm run serve运行前端项目
 <img width="1818" height="705" alt="image" src="https://github.com/user-attachments/assets/62e0b9dc-2f39-4793-9b9a-dc79175e3d33" />
 

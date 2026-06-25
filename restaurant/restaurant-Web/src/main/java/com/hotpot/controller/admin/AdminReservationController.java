@@ -76,4 +76,12 @@ public class AdminReservationController {
         reservationService.complete(reservationId);
         return Result.success();
     }
+
+    @ApiOperation("标记未到店")
+    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
+    @PutMapping("/noshow")
+    public Result<?> noShow(@RequestParam Long reservationId) {
+        reservationService.noShow(reservationId);
+        return Result.success();
+    }
 }

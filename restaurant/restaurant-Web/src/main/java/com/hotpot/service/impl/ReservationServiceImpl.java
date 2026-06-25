@@ -94,4 +94,14 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         reservation.setCompleteTime(LocalDateTime.now());
         updateById(reservation);
     }
+
+    @Override
+    public void noShow(Long reservationId) {
+        Reservation reservation = getById(reservationId);
+        if (reservation == null) {
+            throw new BusinessException("预订记录不存在");
+        }
+        reservation.setStatus(6);
+        updateById(reservation);
+    }
 }

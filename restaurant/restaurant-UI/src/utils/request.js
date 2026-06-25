@@ -45,7 +45,7 @@ request.interceptors.response.use(
     } else if (error.request) {
       // 请求已发出但没有响应（后端未启动/网络不通）
       console.error('[网络错误] 后端服务可能未启动:', error.config?.url)
-      ElMessage.error('无法连接到后端服务，请确认后端已启动（端口 8088）')
+      ElMessage.error('无法连接到后端服务，请确认后端已启动')
     } else {
       console.error('[请求配置错误]', error.message)
       ElMessage.error('请求配置错误')

@@ -1,7 +1,7 @@
 <template>
   <div class="customer-home">
     <!-- 轮播图 -->
-    <el-carousel height="300px" class="banner-carousel" v-if="banners.length > 0">
+    <el-carousel height="560px" class="banner-carousel" v-if="banners.length > 0">
       <el-carousel-item v-for="banner in banners" :key="banner.id">
         <img :src="banner.image" :alt="banner.title" class="banner-image" />
       </el-carousel-item>

@@ -20,4 +20,6 @@ public interface ReservationService extends IService<Reservation> {
     void arrive(Long reservationId);
 
     void complete(Long reservationId);
+
+    void noShow(Long reservationId);
 }

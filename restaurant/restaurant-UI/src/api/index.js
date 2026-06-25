@@ -78,7 +78,8 @@ export const updateReservationStatus = (reservationId, action) => {
     confirm: adminConfirmReservation,
     reject: adminRejectReservation,
     arrive: adminArriveReservation,
-    complete: adminCompleteReservation
+    complete: adminCompleteReservation,
+    noshow: (id) => request.put(`/admin/reservations/noshow?reservationId=${id}`)
   }
   return map[action](reservationId)
 }
@@ -88,6 +89,8 @@ export const adminGetReviews = (params) => request.get('/admin/reviews', { param
 export const adminUpdateReviewVisible = (reviewId, isVisible) => request.put('/admin/reviews/updateVisible', null, { params: { reviewId, isVisible } })
 
 // Aliases used by ReviewManage page
+export const adminGetReviewsAll = adminGetReviews
+export const updateReview = (id, data) => adminUpdateReviewVisible(id, data.isVisible ? 1 : 0)
 export const getReviews = adminGetReviews
 export const updateReview = (review) => request.put('/admin/reviews/updateVisible', null, { params: { reviewId: review.id, isVisible: review.isVisible } })
 
@@ -119,9 +122,15 @@ export const getDashboard = () => request.get('/admin/dashboard')
 // ==================== Admin User Management ====================
 export const adminGetUsers = (params) => request.get('/admin/users', { params })
 export const adminUpdateUserStatus = (userId, status) => request.put('/admin/users/updateStatus', null, { params: { userId, status } })
+export const adminCreateUser = (user) => request.post('/admin/users', user)
+export const adminUpdateUser = (userId, user) => request.put(`/admin/users/${userId}`, user)
+export const adminDeleteUser = (userId) => request.delete(`/admin/users/${userId}`)
 
 // Aliases used by SysUserManage page
 export const getSysUsers = adminGetUsers
+export const createSysUser = adminCreateUser
+export const updateSysUserInfo = adminUpdateUser
+export const deleteSysUser = adminDeleteUser
 export const updateSysUser = (user) => request.put('/admin/users/updateStatus', null, { params: { userId: user.id, status: user.status } })
 
 // ==================== Time Slots ====================

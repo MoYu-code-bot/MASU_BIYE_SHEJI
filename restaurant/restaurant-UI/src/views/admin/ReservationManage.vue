@@ -8,13 +8,13 @@
     <div class="filter-bar">
       <el-select v-model="filterStatus" placeholder="按状态筛选" clearable @change="loadData" style="width: 150px; margin-right: 12px;">
         <el-option label="全部状态" :value="null" />
-        <el-option label="待确认" value="PENDING" />
-        <el-option label="已确认" value="CONFIRMED" />
-        <el-option label="已到店" value="ARRIVED" />
-        <el-option label="已完成" value="COMPLETED" />
-        <el-option label="已取消" value="CANCELLED" />
-        <el-option label="已拒绝" value="REJECTED" />
-        <el-option label="未到店" value="NO_SHOW" />
+        <el-option label="待确认" :value="0" />
+        <el-option label="已确认" :value="1" />
+        <el-option label="已到店" :value="2" />
+        <el-option label="已完成" :value="3" />
+        <el-option label="已取消" :value="4" />
+        <el-option label="已拒绝" :value="5" />
+        <el-option label="未到店" :value="6" />
       </el-select>
       <el-date-picker
         v-model="filterDate"
@@ -29,45 +29,43 @@
 
     <el-table :data="tableData" border stripe v-loading="loading" style="width: 100%">
       <el-table-column prop="orderNo" label="订单号" width="180" />
-      <el-table-column prop="storeName" label="门店" min-width="120" />
       <el-table-column prop="reserveDate" label="预订日期" width="120" />
-      <el-table-column prop="timeSlot" label="时段" width="120" />
       <el-table-column prop="guestCount" label="人数" width="70" />
       <el-table-column prop="customerName" label="预订人" width="100" />
       <el-table-column prop="customerPhone" label="手机" width="130" />
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column label="状态" width="100">
         <template #default="{ row }">
           <el-tag :type="statusTagType(row.status)">
             {{ statusLabel(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="260" fixed="right">
+      <el-table-column label="操作" width="280" fixed="right">
         <template #default="{ row }">
           <el-button
-            v-if="row.status === 'PENDING'"
+            v-if="row.status === 0"
             size="small" type="success"
-            @click="handleAction(row.id, 'CONFIRMED')"
+            @click="handleAction(row.id, 'confirm')"
           >确认</el-button>
           <el-button
-            v-if="row.status === 'PENDING'"
+            v-if="row.status === 0"
             size="small" type="danger"
-            @click="handleAction(row.id, 'REJECTED')"
+            @click="handleAction(row.id, 'reject')"
           >拒绝</el-button>
           <el-button
-            v-if="row.status === 'CONFIRMED'"
+            v-if="row.status === 1"
             size="small" type="primary"
-            @click="handleAction(row.id, 'ARRIVED')"
+            @click="handleAction(row.id, 'arrive')"
           >到店</el-button>
           <el-button
-            v-if="row.status === 'ARRIVED'"
+            v-if="row.status === 2"
             size="small" type="success"
-            @click="handleAction(row.id, 'COMPLETED')"
+            @click="handleAction(row.id, 'complete')"
           >完成</el-button>
           <el-button
-            v-if="row.status === 'CONFIRMED'"
+            v-if="row.status === 1"
             size="small" type="warning"
-            @click="handleAction(row.id, 'NO_SHOW')"
+            @click="handleAction(row.id, 'noshow')"
           >未到店</el-button>
         </template>
       </el-table-column>
@@ -99,14 +97,15 @@ const total = ref(0)
 const filterStatus = ref(null)
 const filterDate = ref(null)
 
+// 状态码 → { label, type }
 const statusMap = {
-  PENDING: { label: '待确认', type: 'warning' },
-  CONFIRMED: { label: '已确认', type: '' },
-  ARRIVED: { label: '已到店', type: 'success' },
-  COMPLETED: { label: '已完成', type: 'info' },
-  CANCELLED: { label: '已取消', type: 'danger' },
-  REJECTED: { label: '已拒绝', type: 'danger' },
-  NO_SHOW: { label: '未到店', type: 'danger' }
+  0: { label: '待确认', type: 'warning' },
+  1: { label: '已确认', type: '' },
+  2: { label: '已到店', type: 'success' },
+  3: { label: '已完成', type: 'info' },
+  4: { label: '已取消', type: 'danger' },
+  5: { label: '已拒绝', type: 'danger' },
+  6: { label: '未到店', type: 'danger' }
 }
 
 const statusLabel = (status) => {
@@ -124,8 +123,8 @@ const loadData = async () => {
       page: currentPage.value,
       pageSize: pageSize.value
     }
-    if (filterStatus.value) params.status = filterStatus.value
-    if (filterDate.value) params.reserveDate = filterDate.value
+    if (filterStatus.value !== null) params.status = filterStatus.value
+    if (filterDate.value) params.date = filterDate.value
 
     const res = await getReservations(params)
     tableData.value = res.data?.records || res.data?.list || res.data || []
@@ -137,16 +136,24 @@ const loadData = async () => {
   }
 }
 
-const handleAction = (id, newStatus) => {
-  const actionLabel = statusLabel(newStatus)
-  ElMessageBox.confirm(`确定将此预订状态改为「${actionLabel}」吗？`, '操作确认', {
+const actionLabels = {
+  confirm: '确认',
+  reject: '拒绝',
+  arrive: '到店',
+  complete: '完成',
+  noshow: '未到店'
+}
+
+const handleAction = (id, action) => {
+  const label = actionLabels[action] || action
+  ElMessageBox.confirm(`确定将此预订状态改为「${label}」吗？`, '操作确认', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
     try {
-      await updateReservationStatus(id, newStatus)
-      ElMessage.success(`已${actionLabel}`)
+      await updateReservationStatus(id, action)
+      ElMessage.success(`已${label}`)
       loadData()
     } catch (e) {
       ElMessage.error('操作失败')

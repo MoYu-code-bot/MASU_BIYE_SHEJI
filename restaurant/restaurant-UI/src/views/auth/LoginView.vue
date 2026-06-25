@@ -85,10 +85,21 @@ const handleAdminLogin = async () => {
   loading.value = true
   try {
     const res = await adminLogin(adminForm.value)
-    const token = res.data?.token || res.token
+    const data = res.data || {}
+    const token = data.token || res.token
+    const role = data.role || 'ADMIN'    // 从后端响应读取角色，不再硬编码
     localStorage.setItem('token', token)
-    localStorage.setItem('role', 'ADMIN')
+    localStorage.setItem('role', role)
     localStorage.setItem('username', adminForm.value.username)
+    // 存储完整用户信息（含storeId等）
+    localStorage.setItem('userInfo', JSON.stringify({
+      id: data.id,
+      username: data.username || adminForm.value.username,
+      realName: data.realName,
+      role: role,
+      storeId: data.storeId,
+      avatar: data.avatar
+    }))
     ElMessage.success('登录成功')
     router.push('/admin/dashboard')
   } catch (e) {

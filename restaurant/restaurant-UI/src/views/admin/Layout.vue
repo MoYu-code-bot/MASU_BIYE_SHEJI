@@ -17,15 +17,15 @@
           <el-icon><DataLine /></el-icon>
           <span>数据看板</span>
         </el-menu-item>
-        <el-menu-item index="/admin/stores">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/stores">
           <el-icon><OfficeBuilding /></el-icon>
           <span>门店管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/categories">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/categories">
           <el-icon><Menu /></el-icon>
           <span>分类管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/dishes">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/dishes">
           <el-icon><Food /></el-icon>
           <span>菜品管理</span>
         </el-menu-item>
@@ -37,15 +37,15 @@
           <el-icon><ChatDotRound /></el-icon>
           <span>评价管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/banners">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/banners">
           <el-icon><PictureFilled /></el-icon>
           <span>轮播图管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/announcements">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/announcements">
           <el-icon><Bell /></el-icon>
           <span>公告管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/sysusers">
+        <el-menu-item v-if="hasMenuAccess(['ADMIN','MANAGER'])" index="/admin/sysusers">
           <el-icon><User /></el-icon>
           <span>系统用户管理</span>
         </el-menu-item>
@@ -59,6 +59,7 @@
           <span class="page-title">火锅到家管理系统</span>
         </div>
         <div class="header-right">
+          <el-tag :type="roleTagType" size="small" class="role-tag">{{ roleLabel }}</el-tag>
           <span class="welcome-text">欢迎，{{ username }}</span>
           <el-button type="danger" size="small" @click="handleLogout">
             <el-icon><SwitchButton /></el-icon>
@@ -95,9 +96,27 @@ const route = useRoute()
 
 const activeMenu = computed(() => route.path)
 
-const username = computed(() => {
-  return localStorage.getItem('username') || '管理员'
+const currentRole = computed(() => {
+  return localStorage.getItem('role') || 'STAFF'
 })
+
+const username = computed(() => {
+  return localStorage.getItem('username') || '用户'
+})
+
+const roleLabel = computed(() => {
+  const map = { ADMIN: '系统管理员', MANAGER: '店长', STAFF: '员工' }
+  return map[currentRole.value] || currentRole.value
+})
+
+const roleTagType = computed(() => {
+  const map = { ADMIN: 'danger', MANAGER: 'warning', STAFF: 'info' }
+  return map[currentRole.value] || 'info'
+})
+
+const hasMenuAccess = (allowedRoles) => {
+  return allowedRoles.includes(currentRole.value)
+}
 
 const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗？', '提示', {
@@ -108,6 +127,8 @@ const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('username')
     localStorage.removeItem('role')
+    localStorage.removeItem('userInfo')
+    localStorage.removeItem('customerPhone')
     ElMessage.success('已退出登录')
     router.push('/login')
   }).catch(() => {})
@@ -162,6 +183,10 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.role-tag {
+  font-weight: bold;
 }
 
 .welcome-text {

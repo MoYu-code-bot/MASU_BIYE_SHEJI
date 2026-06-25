@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,15 +16,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -31,20 +38,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                        // C端公开接口
-                        .antMatchers("/api/auth/**").permitAll()
+                        // C端公开接口（浏览类无需登录）
                         .antMatchers("/api/stores/**").permitAll()
                         .antMatchers("/api/categories/**").permitAll()
                         .antMatchers("/api/banners/**").permitAll()
                         .antMatchers("/api/announcements/**").permitAll()
-                        .antMatchers("/api/reservations/**").permitAll()
-                        .antMatchers("/api/reviews/**").permitAll()
+                        // C端需要登录的接口
+                        .antMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .antMatchers("/api/auth/**").authenticated()
+                        .antMatchers(HttpMethod.POST, "/api/reservations/**").authenticated()
+                        .antMatchers(HttpMethod.GET, "/api/reservations/**").authenticated()
+                        .antMatchers(HttpMethod.DELETE, "/api/reservations/**").authenticated()
+                        .antMatchers("/api/reservations/**").authenticated()
+                        .antMatchers(HttpMethod.POST, "/api/reviews/**").authenticated()
+                        .antMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
                         // B端登录接口
                         .antMatchers("/admin/auth/login").permitAll()
+                        // B端角色权限控制（按URL前缀）
+                        .antMatchers("/admin/users/**").hasRole("ADMIN")           // 仅Admin可管理用户
+                        .antMatchers("/admin/sysusers/**").hasRole("ADMIN")        // 系统用户管理
+                        .antMatchers("/admin/stores/**").hasAnyRole("ADMIN", "MANAGER") // Admin+店长管理门店
+                        .antMatchers("/admin/reservations/**").hasAnyRole("ADMIN", "MANAGER", "STAFF") // 所有角色查看预订
+                        .antMatchers("/admin/reviews/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")      // 所有角色查看评价
+                        .antMatchers("/admin/**").authenticated()                  // 其余B端需要认证
                         // Swagger / 静态资源
                         .antMatchers("/doc.html").permitAll()
                         .antMatchers("/swagger-resources/**").permitAll()
@@ -104,5 +125,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

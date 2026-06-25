@@ -54,4 +54,12 @@ public class Reservation implements Serializable {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    /** 是否已评价（非数据库字段，service层填充） */
+    @TableField(exist = false)
+    private Boolean hasReviewed;
+
+    /** 门店名称（非数据库字段，service层填充） */
+    @TableField(exist = false)
+    private String storeName;
 }

@@ -4,20 +4,30 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hotpot.common.BusinessException;
 import com.hotpot.entity.Reservation;
+import com.hotpot.entity.Review;
+import com.hotpot.entity.Store;
 import com.hotpot.mapper.ReservationMapper;
+import com.hotpot.mapper.ReviewMapper;
+import com.hotpot.mapper.StoreMapper;
 import com.hotpot.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reservation> implements ReservationService {
 
     private static final Random RANDOM = new Random();
+
+    private final ReviewMapper reviewMapper;
+    private final StoreMapper storeMapper;
 
     @Override
     public String createReservation(Reservation reservation) {
@@ -47,9 +57,37 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
 
     @Override
     public List<Reservation> listByCustomerId(Long customerId) {
-        return list(new LambdaQueryWrapper<Reservation>()
+        List<Reservation> reservations = list(new LambdaQueryWrapper<Reservation>()
                 .eq(Reservation::getCustomerId, customerId)
                 .orderByDesc(Reservation::getCreateTime));
+
+        if (reservations.isEmpty()) {
+            return reservations;
+        }
+
+        // 查询已评价的预订：收集所有 reservationId，批量查 review 表
+        Set<Long> reservationIds = reservations.stream()
+                .map(Reservation::getId)
+                .collect(Collectors.toSet());
+        Set<Long> reviewedIds = reviewMapper.selectList(
+                new LambdaQueryWrapper<Review>()
+                        .in(Review::getReservationId, reservationIds)
+        ).stream().map(Review::getReservationId).collect(Collectors.toSet());
+
+        // 查询门店名称
+        Set<Long> storeIds = reservations.stream()
+                .map(Reservation::getStoreId)
+                .collect(Collectors.toSet());
+        Map<Long, String> storeNameMap = storeMapper.selectBatchIds(storeIds).stream()
+                .collect(Collectors.toMap(Store::getId, Store::getName, (a, b) -> a));
+
+        // 填充 hasReviewed 和 storeName
+        for (Reservation r : reservations) {
+            r.setHasReviewed(reviewedIds.contains(r.getId()));
+            r.setStoreName(storeNameMap.getOrDefault(r.getStoreId(), "未知门店"));
+        }
+
+        return reservations;
     }
 
     @Override

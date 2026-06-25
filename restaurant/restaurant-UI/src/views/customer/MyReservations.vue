@@ -50,6 +50,7 @@
           >
             去评价
           </el-button>
+          <span v-if="isCompleted(item.status) && item.hasReviewed" class="reviewed-tag">已评价</span>
         </div>
       </el-card>
       <el-empty v-if="reservations.length === 0 && !loading" description="暂无预订记录" />
@@ -279,5 +280,14 @@ onMounted(() => {
 
 .rating-star:hover {
   color: #f7ba2a;
+}
+
+.reviewed-tag {
+  font-size: 12px;
+  color: #67c23a;
+  border: 1px solid #e1f3d8;
+  background: #f0f9eb;
+  padding: 2px 10px;
+  border-radius: 4px;
 }
 </style>

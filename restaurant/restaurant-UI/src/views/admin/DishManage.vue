@@ -99,10 +99,10 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否推荐" prop="isRecommended">
-          <el-switch v-model="form.isRecommended" :active-value="true" :inactive-value="false" />
+          <el-switch v-model="form.isRecommended" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="是否上架" prop="isOnSale">
-          <el-switch v-model="form.isOnSale" :active-value="true" :inactive-value="false" />
+          <el-switch v-model="form.isOnSale" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="排序" prop="sortOrder">
           <el-input-number v-model="form.sortOrder" :min="0" />
@@ -142,8 +142,8 @@ const defaultForm = {
   image: '',
   description: '',
   spicyLevel: 0,
-  isRecommended: false,
-  isOnSale: true,
+  isRecommended: 0,
+  isOnSale: 1,
   sortOrder: 0
 }
 

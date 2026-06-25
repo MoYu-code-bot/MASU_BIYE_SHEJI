@@ -26,7 +26,7 @@
           </div>
           <div class="info-row">
             <span class="label">时段:</span>
-            <span class="value">{{ item.timeSlot }}</span>
+            <span class="value">{{ item.timeSlotId ? '已选时段' : '-' }}</span>
           </div>
           <div class="info-row">
             <span class="label">人数:</span>
@@ -35,7 +35,7 @@
         </div>
         <div class="card-footer">
           <el-button
-            v-if="item.status === 'PENDING'"
+            v-if="canCancel(item.status)"
             type="danger"
             size="small"
             @click="handleCancel(item.id)"
@@ -43,7 +43,7 @@
             取消预订
           </el-button>
           <el-button
-            v-if="item.status === 'COMPLETED' && !item.hasReviewed"
+            v-if="isCompleted(item.status) && !item.hasReviewed"
             type="primary"
             size="small"
             @click="openReviewDialog(item)"
@@ -112,17 +112,22 @@ const reviewForm = ref({
 })
 
 const statusMap = {
-  PENDING: { label: '待确认', type: 'warning' },
-  CONFIRMED: { label: '已确认', type: '' },
-  ARRIVED: { label: '已到店', type: 'success' },
-  COMPLETED: { label: '已完成', type: 'info' },
-  CANCELLED: { label: '已取消', type: 'danger' },
-  REJECTED: { label: '已拒绝', type: 'danger' },
-  NO_SHOW: { label: '未到店', type: 'danger' }
+  0: { label: '待确认', type: 'warning' },
+  1: { label: '已确认', type: '' },
+  2: { label: '已到店', type: 'success' },
+  3: { label: '已完成', type: 'info' },
+  4: { label: '已取消', type: 'danger' },
+  5: { label: '已拒绝', type: 'danger' },
+  6: { label: '未到店', type: 'danger' }
 }
 
-const statusLabel = (status) => statusMap[status]?.label || status
+const statusLabel = (status) => statusMap[status]?.label || `状态${status}`
 const statusTagType = (status) => statusMap[status]?.type || 'info'
+
+// 判断是否可以取消（0=待确认, 1=已确认）
+const canCancel = (status) => status === 0 || status === 1
+// 判断是否已完成（3=已完成）
+const isCompleted = (status) => status === 3
 
 const loadData = async () => {
   loading.value = true

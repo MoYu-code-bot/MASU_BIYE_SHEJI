@@ -106,6 +106,7 @@ const router = useRouter()
 const currentStep = ref(0)
 const selectedDate = ref('')
 const selectedTimeSlot = ref('')
+const selectedSlotId = ref(null)
 const timeSlots = ref([])
 const submitting = ref(false)
 const formRef = ref(null)
@@ -135,19 +136,25 @@ const disablePastDate = (time) => {
 const loadTimeSlots = async () => {
   if (!selectedDate.value) return
   try {
-    const storeId = route.params.storeId
-    const res = await getTimeSlots({ storeId, date: selectedDate.value })
-    timeSlots.value = res.data || res || []
+    const storeId = Number(route.params.storeId)
+    const res = await getTimeSlots(storeId)
+    // 后端返回 TimeSlot 数组: { id, period, startTime, endTime, maxTables, ... }
+    const raw = res.data || res || []
+    timeSlots.value = raw.map(s => ({
+      id: s.id,
+      time: `${s.startTime}-${s.endTime}`,  // 具体时间如 "11:00-12:00"
+      remaining: s.maxTables   // 用 maxTables 作为余量展示（默认全部可用）
+    }))
   } catch (e) {
     // 如果没有API，使用默认时段
     timeSlots.value = [
-      { time: '11:00-12:00', remaining: 5 },
-      { time: '12:00-13:00', remaining: 3 },
-      { time: '13:00-14:00', remaining: 8 },
-      { time: '17:00-18:00', remaining: 6 },
-      { time: '18:00-19:00', remaining: 2 },
-      { time: '19:00-20:00', remaining: 4 },
-      { time: '20:00-21:00', remaining: 7 }
+      { id: 1, time: '11:00-12:00', remaining: 5 },
+      { id: 2, time: '12:00-13:00', remaining: 3 },
+      { id: 3, time: '13:00-14:00', remaining: 8 },
+      { id: 4, time: '17:00-18:00', remaining: 6 },
+      { id: 5, time: '18:00-19:00', remaining: 2 },
+      { id: 6, time: '19:00-20:00', remaining: 4 },
+      { id: 7, time: '20:00-21:00', remaining: 7 }
     ]
   }
 }
@@ -155,12 +162,14 @@ const loadTimeSlots = async () => {
 const selectTimeSlot = (slot) => {
   if (slot.remaining <= 0) return
   selectedTimeSlot.value = slot.time
+  selectedSlotId.value = slot.id
 }
 
 const nextStep = () => {
   if (currentStep.value === 0) {
     loadTimeSlots()
     selectedTimeSlot.value = ''
+    selectedSlotId.value = null
   }
   if (currentStep.value === 2) {
     formRef.value.validate((valid) => {
@@ -175,11 +184,15 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     const storeId = route.params.storeId
+    const gc = form.value.guestCount
+    // 根据用餐人数自动匹配桌型：1=2人桌 2=4人桌 3=6人桌 4=8人桌 5=大包间
+    const tableTypeId = gc <= 2 ? 1 : gc <= 4 ? 2 : gc <= 6 ? 3 : gc <= 8 ? 4 : 5
     await createReservation({
-      storeId,
+      storeId: Number(storeId),
       reserveDate: selectedDate.value,
-      timeSlot: selectedTimeSlot.value,
-      guestCount: form.value.guestCount,
+      timeSlotId: selectedSlotId.value,
+      tableTypeId: tableTypeId,
+      guestCount: gc,
       customerName: form.value.customerName,
       customerPhone: form.value.customerPhone,
       remark: form.value.remark

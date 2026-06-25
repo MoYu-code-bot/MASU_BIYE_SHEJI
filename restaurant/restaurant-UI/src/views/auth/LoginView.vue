@@ -103,7 +103,7 @@ const handleCustomerLogin = async () => {
   loading.value = true
   try {
     const res = await customerLoginApi(customerForm.value)
-    const token = res.data?.token || res.token
+    const token = typeof res.data === 'string' ? res.data : (res.data?.token || res.token)
     localStorage.setItem('token', token)
     localStorage.setItem('role', 'CUSTOMER')
     localStorage.setItem('customerPhone', customerForm.value.phone)

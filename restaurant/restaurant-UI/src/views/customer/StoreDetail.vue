@@ -88,7 +88,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Location, Clock, Phone } from '@element-plus/icons-vue'
-import { getStoreDetail, getDishes, getReviews } from '@/api'
+import { getStoreDetail, getStoreDishes, getStoreReviews } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -114,8 +114,8 @@ const loadStoreDetail = async () => {
     store.value = res.data || res
 
     // 加载分类
-    const catRes = await getDishes({ storeId, page: 1, pageSize: 500 })
-    const allDishes = catRes.data?.records || catRes.data?.list || catRes.data || []
+    const catRes = await getStoreDishes(storeId)
+    const allDishes = catRes.data || []
     dishes.value = allDishes
 
     // 从菜品中提取唯一分类
@@ -132,8 +132,8 @@ const loadStoreDetail = async () => {
 
     // 加载评价
     try {
-      const reviewRes = await getReviews({ storeId, page: 1, pageSize: 20 })
-      reviews.value = (reviewRes.data?.records || reviewRes.data?.list || reviewRes.data || []).filter(r => r.isVisible)
+      const reviewRes = await getStoreReviews(storeId, { pageNum: 1, pageSize: 20 })
+      reviews.value = (reviewRes.data || []).filter(r => r.isVisible)
     } catch (e) {
       // ignore
     }

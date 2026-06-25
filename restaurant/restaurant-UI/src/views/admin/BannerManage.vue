@@ -11,12 +11,12 @@
     <el-table :data="tableData" border stripe v-loading="loading" style="width: 100%">
       <el-table-column prop="id" label="ID" width="70" />
       <el-table-column prop="title" label="标题" min-width="150" />
-      <el-table-column prop="imageUrl" label="图片" width="180">
+      <el-table-column prop="image" label="图片" width="180">
         <template #default="{ row }">
           <el-image
-            v-if="row.imageUrl"
-            :src="row.imageUrl"
-            :preview-src-list="[row.imageUrl]"
+            v-if="row.image"
+            :src="row.image"
+            :preview-src-list="[row.image]"
             style="width: 120px; height: 60px;"
             fit="cover"
             preview-teleported
@@ -57,11 +57,11 @@
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入标题" />
         </el-form-item>
-        <el-form-item label="图片URL" prop="imageUrl">
-          <el-input v-model="form.imageUrl" placeholder="请输入图片URL" />
+        <el-form-item label="图片URL" prop="image">
+          <el-input v-model="form.image" placeholder="请输入图片URL" />
           <el-image
-            v-if="form.imageUrl"
-            :src="form.imageUrl"
+            v-if="form.image"
+            :src="form.image"
             style="width: 200px; height: 100px; margin-top: 8px;"
             fit="cover"
           />
@@ -106,7 +106,7 @@ const formRef = ref(null)
 
 const defaultForm = {
   title: '',
-  imageUrl: '',
+  image: '',
   linkUrl: '',
   sortOrder: 0,
   status: 1
@@ -116,7 +116,7 @@ const form = ref({ ...defaultForm })
 
 const rules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  imageUrl: [{ required: true, message: '请输入图片URL', trigger: 'blur' }]
+  image: [{ required: true, message: '请输入图片URL', trigger: 'blur' }]
 }
 
 const loadData = async () => {

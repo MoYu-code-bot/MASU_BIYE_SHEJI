@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  // 根路径重定向到管理后台
+  // 根路径重定向到登录页
   {
     path: '/',
-    redirect: '/admin/dashboard'
+    redirect: '/login'
   },
   // 后台管理路由（需要登录，按角色区分权限）
   {

@@ -89,8 +89,6 @@ export const adminGetReviews = (params) => request.get('/admin/reviews', { param
 export const adminUpdateReviewVisible = (reviewId, isVisible) => request.put('/admin/reviews/updateVisible', null, { params: { reviewId, isVisible } })
 
 // Aliases used by ReviewManage page
-export const adminGetReviewsAll = adminGetReviews
-export const updateReview = (id, data) => adminUpdateReviewVisible(id, data.isVisible ? 1 : 0)
 export const getReviews = adminGetReviews
 export const updateReview = (review) => request.put('/admin/reviews/updateVisible', null, { params: { reviewId: review.id, isVisible: review.isVisible } })
 

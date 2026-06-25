@@ -140,7 +140,7 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (isEdit.value) {
-      await updateAnnouncement(form.value.id, form.value)
+      await updateAnnouncement(form.value)
       ElMessage.success('更新成功')
     } else {
       await createAnnouncement(form.value)

@@ -123,7 +123,7 @@ const handleSubmit = async () => {
   await formRef.value.validate()
   submitting.value = true
   try {
-    await updateSysUser(form.value.id, form.value)
+    await updateSysUser(form.value)
     ElMessage.success('更新成功')
     dialogVisible.value = false
     loadData()
@@ -136,7 +136,7 @@ const handleSubmit = async () => {
 
 const handleToggleStatus = async (row, val) => {
   try {
-    await updateSysUser(row.id, { ...row, status: val ? 1 : 0 })
+    await updateSysUser({ ...row, status: val ? 1 : 0 })
     ElMessage.success(val ? '已启用' : '已禁用')
     loadData()
   } catch (e) {

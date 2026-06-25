@@ -149,7 +149,7 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (isEdit.value) {
-      await updateBanner(form.value.id, form.value)
+      await updateBanner(form.value)
       ElMessage.success('更新成功')
     } else {
       await createBanner(form.value)

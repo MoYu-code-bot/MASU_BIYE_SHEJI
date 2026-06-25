@@ -108,7 +108,7 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (isEdit.value) {
-      await updateCategory(form.value.id, form.value)
+      await updateCategory(form.value)
       ElMessage.success('更新成功')
     } else {
       await createCategory(form.value)

@@ -153,7 +153,7 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (isEdit.value) {
-      await updateStore(form.value.id, form.value)
+      await updateStore(form.value)
       ElMessage.success('更新成功')
     } else {
       await createStore(form.value)

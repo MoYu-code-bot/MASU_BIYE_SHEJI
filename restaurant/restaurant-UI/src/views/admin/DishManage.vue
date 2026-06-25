@@ -206,7 +206,7 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (isEdit.value) {
-      await updateDish(form.value.id, form.value)
+      await updateDish(form.value)
       ElMessage.success('更新成功')
     } else {
       await createDish(form.value)

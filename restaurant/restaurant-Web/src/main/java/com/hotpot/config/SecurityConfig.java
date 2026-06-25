@@ -60,8 +60,7 @@ public class SecurityConfig {
                         // B端登录接口
                         .antMatchers("/admin/auth/login").permitAll()
                         // B端角色权限控制（按URL前缀）
-                        .antMatchers("/admin/users/**").hasRole("ADMIN")           // 仅Admin可管理用户
-                        .antMatchers("/admin/sysusers/**").hasRole("ADMIN")        // 系统用户管理
+                        .antMatchers("/admin/users/**").hasAnyRole("ADMIN", "MANAGER") // Admin+店长管理用户（Controller层细粒度控制：店长不可操作ADMIN）
                         .antMatchers("/admin/stores/**").hasAnyRole("ADMIN", "MANAGER") // Admin+店长管理门店
                         .antMatchers("/admin/reservations/**").hasAnyRole("ADMIN", "MANAGER", "STAFF") // 所有角色查看预订
                         .antMatchers("/admin/reviews/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")      // 所有角色查看评价

@@ -136,6 +136,20 @@ const loadData = async () => {
     const res = await getMyReservations({ page: currentPage.value, pageSize: pageSize.value })
     reservations.value = res.data?.records || res.data?.list || res.data || []
     total.value = res.data?.total || 0
+
+    // 检测是否有已完成但未评价的订单，提示用户评价
+    const unreviewed = reservations.value.filter(r => r.status === 3 && !r.hasReviewed)
+    if (unreviewed.length > 0 && !sessionStorage.getItem('review_prompt_shown')) {
+      sessionStorage.setItem('review_prompt_shown', '1')
+      setTimeout(() => {
+        ElMessage({
+          message: `用餐已完成，请对此次用餐进行评价（共 ${unreviewed.length} 笔待评价订单）`,
+          type: 'success',
+          duration: 5000,
+          showClose: true
+        })
+      }, 500)
+    }
   } catch (e) {
     ElMessage.error('加载预订列表失败')
   } finally {

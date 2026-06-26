@@ -55,6 +55,15 @@
     <!-- 步骤3: 填写信息 -->
     <div v-if="currentStep === 2" class="step-content">
       <h3>请填写预订信息</h3>
+
+      <!-- 已选套餐提示 -->
+      <div class="selected-dish-tip" v-if="selectedDish.dishId">
+        <el-icon style="color: #ff6b35; margin-right: 6px;">🍲</el-icon>
+        已选套餐：<strong>{{ selectedDish.dishName }}</strong>
+        <span class="dish-tip-price">¥{{ selectedDish.dishPrice }}/人</span>
+        <el-link type="info" style="margin-left: 12px; font-size: 12px;" @click="clearDish">取消套餐</el-link>
+      </div>
+
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px" style="max-width: 500px;">
         <el-form-item label="用餐人数" prop="guestCount">
           <el-input-number v-model="form.guestCount" :min="1" :max="20" size="large" />
@@ -84,6 +93,11 @@
         <el-descriptions-item label="用餐人数">{{ form.guestCount }}人</el-descriptions-item>
         <el-descriptions-item label="预订人">{{ form.customerName }}</el-descriptions-item>
         <el-descriptions-item label="手机号">{{ form.customerPhone }}</el-descriptions-item>
+        <el-descriptions-item label="已选套餐" v-if="selectedDish.dishId">
+          <span style="color: #ff6b35; font-weight: bold;">
+            {{ selectedDish.dishName }} — ¥{{ selectedDish.dishPrice }}/人
+          </span>
+        </el-descriptions-item>
         <el-descriptions-item label="备注" v-if="form.remark">{{ form.remark }}</el-descriptions-item>
       </el-descriptions>
       <div class="step-actions">
@@ -110,6 +124,17 @@ const selectedSlotId = ref(null)
 const timeSlots = ref([])
 const submitting = ref(false)
 const formRef = ref(null)
+
+// 套餐信息（从菜品页跳转时携带）
+const selectedDish = ref({
+  dishId: route.query.dishId ? Number(route.query.dishId) : null,
+  dishName: route.query.dishName || '',
+  dishPrice: route.query.dishPrice || ''
+})
+
+const clearDish = () => {
+  selectedDish.value = { dishId: null, dishName: '', dishPrice: '' }
+}
 
 const form = ref({
   guestCount: 2,
@@ -195,7 +220,11 @@ const handleSubmit = async () => {
       guestCount: gc,
       customerName: form.value.customerName,
       customerPhone: form.value.customerPhone,
-      remark: form.value.remark
+      remark: form.value.remark,
+      ...(selectedDish.value.dishId ? {
+        dishId: selectedDish.value.dishId,
+        dishName: selectedDish.value.dishName
+      } : {})
     })
     ElMessage.success('预订成功！')
     router.push('/c/my-reservations')
@@ -304,5 +333,24 @@ onMounted(() => {
 .confirm-info {
   max-width: 500px;
   margin: 0 auto;
+}
+
+/* 已选套餐提示条 */
+.selected-dish-tip {
+  display: inline-flex;
+  align-items: center;
+  background: #fff8f0;
+  border: 1px solid #ffb366;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.dish-tip-price {
+  color: #ff6b35;
+  font-weight: bold;
+  margin-left: 8px;
 }
 </style>

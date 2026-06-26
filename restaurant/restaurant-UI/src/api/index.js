@@ -13,7 +13,10 @@ export const getStoreSlots = (storeId) => request.get('/api/stores/slots', { par
 export const getStoreReviews = (storeId, params) => request.get('/api/stores/reviews', { params: { storeId, ...params } })
 
 // ==================== Category (Customer) ====================
-export const getCategories = () => request.get('/api/categories/list')
+export const getCategories = (storeId) => {
+  const params = storeId ? { storeId } : {}
+  return request.get('/api/categories/list', { params })
+}
 
 // ==================== Banner (Customer) ====================
 export const getBanners = () => request.get('/api/banners/list')

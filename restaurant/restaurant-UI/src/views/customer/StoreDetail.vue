@@ -34,11 +34,16 @@
             v-for="dish in getDishesByCategory(cat.id)"
             :key="dish.id"
             shadow="hover"
-            class="dish-card"
+            :class="['dish-card', isReservableCategory(cat) ? 'dish-card-clickable' : 'dish-card-preview', selectedDishId === dish.id ? 'dish-card-selected' : '']"
+            @click="isReservableCategory(cat) ? selectDish(dish) : null"
           >
             <div class="dish-image-wrap">
               <img :src="dish.image || defaultDishImage" :alt="dish.name" class="dish-image" />
               <el-tag v-if="dish.isRecommended" type="danger" size="small" class="recommend-badge">推荐</el-tag>
+              <div v-if="isReservableCategory(cat)" class="dish-select-hint" :class="{ 'dish-select-hint--active': selectedDishId === dish.id }">
+                {{ selectedDishId === dish.id ? '✓ 已选中' : '点击预订' }}
+              </div>
+              <div v-else class="dish-select-hint dish-select-hint--preview">仅供预览</div>
             </div>
             <div class="dish-info">
               <h4 class="dish-name">
@@ -88,7 +93,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Location, Clock, Phone } from '@element-plus/icons-vue'
-import { getStoreDetail, getStoreDishes, getStoreReviews } from '@/api'
+import { getStoreDetail, getStoreDishes, getStoreReviews, getCategories } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -99,11 +104,19 @@ const categories = ref([])
 const dishes = ref([])
 const reviews = ref([])
 const activeCategory = ref('')
+const selectedDish = ref(null)
+const selectedDishId = ref(null)
 
 const defaultDishImage = 'https://via.placeholder.com/200x150?text=菜品'
 
 const getDishesByCategory = (categoryId) => {
   return dishes.value.filter(d => d.categoryId === categoryId && d.isOnSale)
+}
+
+const RESERVABLE_CATEGORY_NAME = '锅底'
+
+const isReservableCategory = (cat) => {
+  return cat.name === RESERVABLE_CATEGORY_NAME
 }
 
 const loadStoreDetail = async () => {
@@ -114,21 +127,15 @@ const loadStoreDetail = async () => {
     store.value = res.data || res
 
     // 加载分类
-    const catRes = await getStoreDishes(storeId)
-    const allDishes = catRes.data || []
-    dishes.value = allDishes
-
-    // 从菜品中提取唯一分类
-    const catMap = new Map()
-    allDishes.forEach(d => {
-      if (d.categoryId && !catMap.has(d.categoryId)) {
-        catMap.set(d.categoryId, { id: d.categoryId, name: d.categoryName || `分类${d.categoryId}` })
-      }
-    })
-    categories.value = Array.from(catMap.values())
+    const catRes = await getCategories(storeId)
+    categories.value = catRes.data || []
     if (categories.value.length > 0) {
       activeCategory.value = String(categories.value[0].id)
     }
+
+    // 加载菜品
+    const dishRes = await getStoreDishes(storeId)
+    dishes.value = (dishRes.data || [])
 
     // 加载评价
     try {
@@ -144,9 +151,31 @@ const loadStoreDetail = async () => {
   }
 }
 
+const selectDish = (dish) => {
+  if (selectedDishId.value === dish.id) {
+    // 再次点击取消选中
+    selectedDish.value = null
+    selectedDishId.value = null
+  } else {
+    selectedDish.value = dish
+    selectedDishId.value = dish.id
+  }
+}
+
 const goReserve = () => {
+  if (!selectedDish.value) {
+    ElMessage.warning('请先选择需要预订的锅底套餐')
+    return
+  }
   const storeId = route.params.storeId
-  router.push(`/c/reserve/${storeId}`)
+  router.push({
+    path: `/c/reserve/${storeId}`,
+    query: {
+      dishId: selectedDish.value.id,
+      dishName: selectedDish.value.name,
+      dishPrice: selectedDish.value.price
+    }
+  })
 }
 
 onMounted(() => {
@@ -199,6 +228,57 @@ onMounted(() => {
 
 .dish-card {
   cursor: default;
+}
+
+.dish-card-clickable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dish-card-clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.25);
+}
+
+.dish-card-preview {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.dish-card-selected {
+  border: 2px solid #ff6b35;
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.35);
+}
+
+.dish-select-hint--active {
+  background: rgba(255, 107, 53, 1);
+  opacity: 1 !important;
+}
+
+.dish-select-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 107, 53, 0.85);
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  padding: 6px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.dish-card-clickable:hover .dish-select-hint {
+  opacity: 1;
+}
+
+.dish-card-preview:hover .dish-select-hint--preview {
+  opacity: 1;
+}
+
+.dish-select-hint--preview {
+  background: rgba(150, 150, 150, 0.85);
 }
 
 .dish-card :deep(.el-card__body) {

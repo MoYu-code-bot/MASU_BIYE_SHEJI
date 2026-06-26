@@ -19,7 +19,10 @@ export const getCategories = () => request.get('/api/categories/list')
 export const getBanners = () => request.get('/api/banners/list')
 
 // ==================== Announcement (Customer) ====================
-export const getAnnouncements = (storeId) => request.get('/api/announcements/list', { params: { storeId } })
+export const getAnnouncements = (storeId) => {
+  const params = storeId ? { storeId } : {}
+  return request.get('/api/announcements/list', { params })
+}
 
 // ==================== Reservation (Customer) ====================
 export const createReservation = (data) => request.post('/api/reservations/create', data)

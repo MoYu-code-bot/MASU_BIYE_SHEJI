@@ -8,4 +8,6 @@ import java.util.List;
 public interface AnnouncementService extends IService<Announcement> {
 
     List<Announcement> listByStoreId(Long storeId);
+
+    List<Announcement> listActive();
 }

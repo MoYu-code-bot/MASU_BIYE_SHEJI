@@ -19,4 +19,11 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
                 .eq(Announcement::getStatus, 1)
                 .orderByDesc(Announcement::getCreateTime));
     }
+
+    @Override
+    public List<Announcement> listActive() {
+        return list(new LambdaQueryWrapper<Announcement>()
+                .eq(Announcement::getStatus, 1)
+                .orderByDesc(Announcement::getCreateTime));
+    }
 }

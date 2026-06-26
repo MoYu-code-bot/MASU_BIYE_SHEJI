@@ -56,6 +56,10 @@
           </el-button>
           <span v-if="isCompleted(item.status) && item.hasReviewed" class="reviewed-tag">已评价</span>
         </div>
+        <div class="card-hotline">
+          <span class="hotline-icon">📞</span>
+          如有问题请拨打热线 001-331288
+        </div>
       </el-card>
       <el-empty v-if="reservations.length === 0 && !loading" description="暂无预订记录" />
     </div>
@@ -312,5 +316,18 @@ onMounted(() => {
   background: #f0f9eb;
   padding: 2px 10px;
   border-radius: 4px;
+}
+
+.card-hotline {
+  margin-top: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #909399;
+  text-align: right;
+  border-top: 1px dashed #eee;
+}
+
+.hotline-icon {
+  margin-right: 4px;
 }
 </style>

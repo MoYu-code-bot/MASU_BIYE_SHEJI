@@ -6,9 +6,13 @@ import com.hotpot.common.BusinessException;
 import com.hotpot.entity.Reservation;
 import com.hotpot.entity.Review;
 import com.hotpot.entity.Store;
+import com.hotpot.entity.TimeSlot;
+import com.hotpot.entity.Dish;
 import com.hotpot.mapper.ReservationMapper;
 import com.hotpot.mapper.ReviewMapper;
 import com.hotpot.mapper.StoreMapper;
+import com.hotpot.mapper.TimeSlotMapper;
+import com.hotpot.mapper.DishMapper;
 import com.hotpot.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,8 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
 
     private final ReviewMapper reviewMapper;
     private final StoreMapper storeMapper;
+    private final TimeSlotMapper timeSlotMapper;
+    private final DishMapper dishMapper;
 
     @Override
     public String createReservation(Reservation reservation) {
@@ -81,10 +87,31 @@ public class ReservationServiceImpl extends ServiceImpl<ReservationMapper, Reser
         Map<Long, String> storeNameMap = storeMapper.selectBatchIds(storeIds).stream()
                 .collect(Collectors.toMap(Store::getId, Store::getName, (a, b) -> a));
 
-        // 填充 hasReviewed 和 storeName
+        // 查询时段信息
+        Set<Long> timeSlotIds = reservations.stream()
+                .map(Reservation::getTimeSlotId)
+                .filter(id -> id != null)
+                .collect(Collectors.toSet());
+        Map<Long, String> timeSlotTextMap = timeSlotMapper.selectBatchIds(timeSlotIds).stream()
+                .collect(Collectors.toMap(
+                        TimeSlot::getId,
+                        ts -> ts.getStartTime() + "-" + ts.getEndTime(),
+                        (a, b) -> a));
+
+        // 查询套餐名称
+        Set<Long> dishIds = reservations.stream()
+                .map(Reservation::getDishId)
+                .filter(id -> id != null)
+                .collect(Collectors.toSet());
+        Map<Long, String> dishNameMap = dishMapper.selectBatchIds(dishIds).stream()
+                .collect(Collectors.toMap(Dish::getId, Dish::getName, (a, b) -> a));
+
+        // 填充 hasReviewed、storeName、timeSlotText、dishName
         for (Reservation r : reservations) {
             r.setHasReviewed(reviewedIds.contains(r.getId()));
             r.setStoreName(storeNameMap.getOrDefault(r.getStoreId(), "未知门店"));
+            r.setTimeSlotText(timeSlotTextMap.get(r.getTimeSlotId()));
+            r.setDishName(dishNameMap.get(r.getDishId()));
         }
 
         return reservations;

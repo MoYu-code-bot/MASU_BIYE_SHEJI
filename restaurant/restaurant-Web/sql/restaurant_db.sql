@@ -182,6 +182,7 @@ CREATE TABLE `reservation` (
   `guest_count` int NOT NULL COMMENT '就餐人数',
   `customer_name` varchar(50) NOT NULL COMMENT '预订人姓名',
   `customer_phone` varchar(20) NOT NULL COMMENT '预订人手机',
+  `dish_id` bigint DEFAULT NULL COMMENT '预订套餐ID',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态：0待确认 1已确认 2已到店 3已完成 4已取消 5已拒绝 6未到店',
   `cancel_reason` varchar(255) DEFAULT NULL COMMENT '取消原因',
@@ -407,3 +408,10 @@ INSERT INTO `banner` (`title`, `image`, `sort_order`, `status`) VALUES
 INSERT INTO `announcement` (`store_id`, `title`, `content`, `status`) VALUES
 (1, '新店开业优惠', '即日起至本月底，全场锅底8折，预订即送酸梅汤一扎！', 1),
 (1, '温馨提示', '周末高峰期建议提前2天预订，包间需提前3天预订。', 1);
+
+-- ============================================================
+-- 三、增量DDL（已有数据库执行以下SQL即可）
+-- ============================================================
+
+-- 预订表增加套餐ID字段
+ALTER TABLE `reservation` ADD COLUMN `dish_id` bigint DEFAULT NULL COMMENT '预订套餐ID' AFTER `customer_phone`;

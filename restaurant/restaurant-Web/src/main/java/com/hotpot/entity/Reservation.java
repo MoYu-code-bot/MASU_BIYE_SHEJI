@@ -62,4 +62,15 @@ public class Reservation implements Serializable {
     /** 门店名称（非数据库字段，service层填充） */
     @TableField(exist = false)
     private String storeName;
+
+    /** 套餐名称（非数据库字段，service层填充） */
+    @TableField(exist = false)
+    private String dishName;
+
+    /** 时段文本（如"11:00-12:00"，非数据库字段，service层填充） */
+    @TableField(exist = false)
+    private String timeSlotText;
+
+    /** 预订套餐ID */
+    private Long dishId;
 }

@@ -26,7 +26,11 @@
           </div>
           <div class="info-row">
             <span class="label">时段:</span>
-            <span class="value">{{ item.timeSlotId ? '已选时段' : '-' }}</span>
+            <span class="value">{{ item.timeSlotText || '-' }}</span>
+          </div>
+          <div class="info-row" v-if="item.dishName">
+            <span class="label">套餐:</span>
+            <span class="value dish-value">{{ item.dishName }}</span>
           </div>
           <div class="info-row">
             <span class="label">人数:</span>
@@ -265,6 +269,11 @@ onMounted(() => {
 
 .value {
   color: #333;
+}
+
+.dish-value {
+  color: #ff6b35;
+  font-weight: bold;
 }
 
 .card-footer {

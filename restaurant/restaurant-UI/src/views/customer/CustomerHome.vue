@@ -4,10 +4,18 @@
     <div class="announcement-bar" v-if="announcements.length > 0">
       <div class="announcement-icon">📢</div>
       <div class="announcement-scroll">
-        <div class="announcement-track" :style="announcementTrackStyle">
+        <!-- 渲染两份内容，实现无缝循环 -->
+        <div class="announcement-track">
           <span
             v-for="(item, i) in announcements"
-            :key="i"
+            :key="'a' + i"
+            class="announcement-item"
+          >
+            【{{ item.title }}】{{ item.content }}
+          </span>
+          <span
+            v-for="(item, i) in announcements"
+            :key="'b' + i"
             class="announcement-item"
           >
             【{{ item.title }}】{{ item.content }}
@@ -46,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getBanners, getStores, getAnnouncements } from '@/api'
@@ -56,15 +64,7 @@ const banners = ref([])
 const stores = ref([])
 const announcements = ref([])
 const loading = ref(false)
-const announcementOffset = ref(0)
-
 const defaultCover = 'https://via.placeholder.com/400x200?text=火锅'
-
-const announcementTrackStyle = computed(() => ({
-  transform: `translateX(-${announcementOffset.value}px)`
-}))
-
-let announcementTimer = null
 
 const loadBanners = async () => {
   try {
@@ -79,29 +79,9 @@ const loadAnnouncements = async () => {
   try {
     const res = await getAnnouncements()
     announcements.value = res.data || []
-    if (announcements.value.length > 0) {
-      startAnnouncementScroll()
-    }
   } catch (e) {
     // ignore
   }
-}
-
-const startAnnouncementScroll = () => {
-  const speed = 1 // 滚动速度 px/帧
-  const animate = () => {
-    announcementOffset.value += speed
-    // 重置实现无缝循环
-    const barEl = document.querySelector('.announcement-scroll')
-    if (barEl) {
-      const trackEl = barEl.querySelector('.announcement-track')
-      if (trackEl && announcementOffset.value >= trackEl.scrollWidth / 2) {
-        announcementOffset.value = 0
-      }
-    }
-    announcementTimer = requestAnimationFrame(animate)
-  }
-  announcementTimer = requestAnimationFrame(animate)
 }
 
 const loadStores = async () => {
@@ -126,11 +106,6 @@ onMounted(() => {
   loadStores()
 })
 
-onUnmounted(() => {
-  if (announcementTimer) {
-    cancelAnimationFrame(announcementTimer)
-  }
-})
 </script>
 
 <style scoped>
@@ -171,7 +146,17 @@ onUnmounted(() => {
 .announcement-track {
   display: inline-block;
   white-space: nowrap;
-  will-change: transform;
+  /* 两份内容宽度各占50%，动画从 0 移动到 -50%，实现无缝循环 */
+  animation: marquee 20s linear infinite;
+}
+
+.announcement-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .announcement-item {

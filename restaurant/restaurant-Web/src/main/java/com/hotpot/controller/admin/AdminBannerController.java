@@ -4,8 +4,8 @@ import com.hotpot.common.Result;
 import com.hotpot.entity.Banner;
 import com.hotpot.service.BannerService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,24 +27,23 @@ public class AdminBannerController {
 
     @ApiOperation("新增轮播图")
     @PostMapping
-    public Result<?> add(@RequestBody Banner banner) {
+    public Result<?> add(@ApiParam("轮播图信息") @RequestBody Banner banner) {
         bannerService.save(banner);
         return Result.success();
     }
 
     @ApiOperation("修改轮播图")
-    @ApiImplicitParam(name = "bannerId", value = "轮播图ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/update")
-    public Result<?> update(@RequestParam Long bannerId, @RequestBody Banner banner) {
+    public Result<?> update(@ApiParam("轮播图ID") @RequestParam Long bannerId,
+                            @ApiParam("轮播图信息") @RequestBody Banner banner) {
         banner.setId(bannerId);
         bannerService.updateById(banner);
         return Result.success();
     }
 
     @ApiOperation("删除轮播图")
-    @ApiImplicitParam(name = "bannerId", value = "轮播图ID", required = true, dataType = "long", paramType = "query")
     @DeleteMapping("/delete")
-    public Result<?> delete(@RequestParam Long bannerId) {
+    public Result<?> delete(@ApiParam("轮播图ID") @RequestParam Long bannerId) {
         bannerService.removeById(bannerId);
         return Result.success();
     }

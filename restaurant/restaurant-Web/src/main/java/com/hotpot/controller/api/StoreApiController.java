@@ -10,8 +10,8 @@ import com.hotpot.service.ReviewService;
 import com.hotpot.service.StoreService;
 import com.hotpot.service.TimeSlotService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,31 +38,28 @@ public class StoreApiController {
     }
 
     @ApiOperation("门店详情")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @GetMapping("/detail")
-    public Result<Store> detail(@RequestParam Long storeId) {
+    public Result<Store> detail(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(storeService.getById(storeId));
     }
 
     @ApiOperation("门店菜品")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @GetMapping("/dishes")
-    public Result<List<Dish>> dishes(@RequestParam Long storeId) {
+    public Result<List<Dish>> dishes(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(dishService.listByStoreId(storeId));
     }
 
     @ApiOperation("门店时段")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @GetMapping("/slots")
-    public Result<List<TimeSlot>> slots(@RequestParam Long storeId) {
+    public Result<List<TimeSlot>> slots(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(timeSlotService.listByStoreId(storeId));
     }
 
     @ApiOperation("门店评价")
     @GetMapping("/reviews")
-    public Result<List<Review>> reviews(@RequestParam Long storeId,
-                                        @RequestParam(defaultValue = "1") Integer pageNum,
-                                        @RequestParam(defaultValue = "10") Integer pageSize) {
+    public Result<List<Review>> reviews(@ApiParam("门店ID") @RequestParam Long storeId,
+                                        @ApiParam("页码") @RequestParam(defaultValue = "1") Integer pageNum,
+                                        @ApiParam("每页条数") @RequestParam(defaultValue = "10") Integer pageSize) {
         return Result.success(reviewService.listByStoreId(storeId, pageNum, pageSize));
     }
 }

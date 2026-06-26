@@ -5,8 +5,8 @@ import com.hotpot.common.Result;
 import com.hotpot.entity.Announcement;
 import com.hotpot.service.AnnouncementService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,7 @@ public class  AdminAnnouncementController {
 
     @ApiOperation("查询公告列表")
     @GetMapping
-    public Result<List<Announcement>> list(@RequestParam(required = false) Long storeId) {
+    public Result<List<Announcement>> list(@ApiParam("门店ID") @RequestParam(required = false) Long storeId) {
         if (storeId != null) {
             return Result.success(announcementService.list(
                     new LambdaQueryWrapper<Announcement>()
@@ -34,24 +34,23 @@ public class  AdminAnnouncementController {
 
     @ApiOperation("新增公告")
     @PostMapping
-    public Result<?> add(@RequestBody Announcement announcement) {
+    public Result<?> add(@ApiParam("公告信息") @RequestBody Announcement announcement) {
         announcementService.save(announcement);
         return Result.success();
     }
 
     @ApiOperation("修改公告")
-    @ApiImplicitParam(name = "announcementId", value = "公告ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/update")
-    public Result<?> update(@RequestParam Long announcementId, @RequestBody Announcement announcement) {
+    public Result<?> update(@ApiParam("公告ID") @RequestParam Long announcementId,
+                            @ApiParam("公告信息") @RequestBody Announcement announcement) {
         announcement.setId(announcementId);
         announcementService.updateById(announcement);
         return Result.success();
     }
 
     @ApiOperation("删除公告")
-    @ApiImplicitParam(name = "announcementId", value = "公告ID", required = true, dataType = "long", paramType = "query")
     @DeleteMapping("/delete")
-    public Result<?> delete(@RequestParam Long announcementId) {
+    public Result<?> delete(@ApiParam("公告ID") @RequestParam Long announcementId) {
         announcementService.removeById(announcementId);
         return Result.success();
     }

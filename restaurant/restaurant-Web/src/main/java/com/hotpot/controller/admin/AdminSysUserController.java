@@ -10,6 +10,7 @@ import com.hotpot.entity.SysUser;
 import com.hotpot.service.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,8 +18,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
 
 @Api(tags = "B端-系统用户管理")
 @RestController
@@ -48,7 +47,7 @@ public class AdminSysUserController {
     @ApiOperation("分页查询用户（MANAGER不可见ADMIN）")
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public Result<PageResult<SysUser>> page(PageQuery query) {
+    public Result<PageResult<SysUser>> page(@ApiParam("分页参数") PageQuery query) {
         String role = getCurrentRole();
         Page<SysUser> page = new Page<>(query.getPageNum(), query.getPageSize());
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
@@ -63,7 +62,7 @@ public class AdminSysUserController {
     @ApiOperation("新增用户（仅ADMIN可新增任意角色，MANAGER只能新增STAFF）")
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public Result<?> create(@RequestBody SysUser sysUser) {
+    public Result<?> create(@ApiParam("用户信息") @RequestBody SysUser sysUser) {
         String currentRole = getCurrentRole();
         // 店长不能创建ADMIN或MANAGER
         if ("MANAGER".equals(currentRole) && !"STAFF".equals(sysUser.getRole())) {
@@ -84,7 +83,8 @@ public class AdminSysUserController {
     @ApiOperation("修改用户信息（不可修改ADMIN角色，不可降级其他ADMIN）")
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public Result<?> update(@PathVariable Long userId, @RequestBody SysUser updateInfo) {
+    public Result<?> update(@ApiParam("用户ID") @PathVariable Long userId,
+                            @ApiParam("用户更新信息") @RequestBody SysUser updateInfo) {
         String currentRole = getCurrentRole();
         SysUser target = sysUserService.getById(userId);
         if (target == null) {
@@ -117,7 +117,7 @@ public class AdminSysUserController {
     @ApiOperation("删除用户（不可删除ADMIN）")
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<?> delete(@PathVariable Long userId) {
+    public Result<?> delete(@ApiParam("用户ID") @PathVariable Long userId) {
         SysUser target = sysUserService.getById(userId);
         if (target == null) {
             throw new BusinessException("用户不存在");
@@ -132,7 +132,8 @@ public class AdminSysUserController {
     @ApiOperation("修改用户状态（启用/禁用）")
     @PutMapping("/updateStatus")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public Result<?> updateStatus(@RequestParam Long userId, @RequestParam Integer status) {
+    public Result<?> updateStatus(@ApiParam("用户ID") @RequestParam Long userId,
+                                  @ApiParam("状态：1-启用，0-禁用") @RequestParam Integer status) {
         String currentRole = getCurrentRole();
         SysUser target = sysUserService.getById(userId);
         if (target == null) {

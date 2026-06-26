@@ -6,6 +6,7 @@ import com.hotpot.service.SysUserService;
 import com.hotpot.vo.LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ public class AdminAuthController {
 
     @ApiOperation("管理员登录")
     @PostMapping("/login")
-    public Result<LoginVO> login(@Valid @RequestBody LoginRequest request) {
+    public Result<LoginVO> login(@ApiParam("登录请求") @Valid @RequestBody LoginRequest request) {
         LoginVO vo = sysUserService.login(request);
         return Result.success(vo);
     }

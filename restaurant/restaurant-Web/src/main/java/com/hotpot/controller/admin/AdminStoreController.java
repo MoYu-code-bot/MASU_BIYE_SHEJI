@@ -6,8 +6,8 @@ import com.hotpot.dto.PageQuery;
 import com.hotpot.entity.Store;
 import com.hotpot.service.StoreService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,30 +21,29 @@ public class AdminStoreController {
 
     @ApiOperation("分页查询门店")
     @GetMapping
-    public Result<PageResult<Store>> page(PageQuery query) {
+    public Result<PageResult<Store>> page(@ApiParam("分页参数") PageQuery query) {
         return Result.success(storeService.pageQuery(query));
     }
 
     @ApiOperation("新增门店")
     @PostMapping
-    public Result<?> add(@RequestBody Store store) {
+    public Result<?> add(@ApiParam("门店信息") @RequestBody Store store) {
         storeService.save(store);
         return Result.success();
     }
 
     @ApiOperation("修改门店")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/update")
-    public Result<?> update(@RequestParam Long storeId, @RequestBody Store store) {
+    public Result<?> update(@ApiParam("门店ID") @RequestParam Long storeId,
+                            @ApiParam("门店信息") @RequestBody Store store) {
         store.setId(storeId);
         storeService.updateById(store);
         return Result.success();
     }
 
     @ApiOperation("删除门店")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @DeleteMapping("/delete")
-    public Result<?> delete(@RequestParam Long storeId) {
+    public Result<?> delete(@ApiParam("门店ID") @RequestParam Long storeId) {
         storeService.removeById(storeId);
         return Result.success();
     }

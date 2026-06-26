@@ -8,8 +8,8 @@ import com.hotpot.dto.PageQuery;
 import com.hotpot.entity.Reservation;
 import com.hotpot.service.ReservationService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +26,10 @@ public class AdminReservationController {
 
     @ApiOperation("分页查询预订")
     @GetMapping
-    public Result<PageResult<Reservation>> page(PageQuery query,
-                                                @RequestParam(required = false) Long storeId,
-                                                @RequestParam(required = false) Integer status,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public Result<PageResult<Reservation>> page(@ApiParam("分页参数") PageQuery query,
+                                                @ApiParam("门店ID") @RequestParam(required = false) Long storeId,
+                                                @ApiParam("预订状态") @RequestParam(required = false) Integer status,
+                                                @ApiParam("预订日期") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Page<Reservation> page = new Page<>(query.getPageNum(), query.getPageSize());
         LambdaQueryWrapper<Reservation> wrapper = new LambdaQueryWrapper<>();
         if (storeId != null) {
@@ -46,41 +46,36 @@ public class AdminReservationController {
     }
 
     @ApiOperation("确认预订")
-    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/confirm")
-    public Result<?> confirm(@RequestParam Long reservationId) {
+    public Result<?> confirm(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.confirm(reservationId);
         return Result.success();
     }
 
     @ApiOperation("拒绝预订")
-    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/reject")
-    public Result<?> reject(@RequestParam Long reservationId) {
+    public Result<?> reject(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.reject(reservationId);
         return Result.success();
     }
 
-    @ApiOperation("到店")
-    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
+    @ApiOperation("到店确认")
     @PutMapping("/arrive")
-    public Result<?> arrive(@RequestParam Long reservationId) {
+    public Result<?> arrive(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.arrive(reservationId);
         return Result.success();
     }
 
     @ApiOperation("完成预订")
-    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/complete")
-    public Result<?> complete(@RequestParam Long reservationId) {
+    public Result<?> complete(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.complete(reservationId);
         return Result.success();
     }
 
     @ApiOperation("标记未到店")
-    @ApiImplicitParam(name = "reservationId", value = "预订ID", required = true, dataType = "long", paramType = "query")
     @PutMapping("/noshow")
-    public Result<?> noShow(@RequestParam Long reservationId) {
+    public Result<?> noShow(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.noShow(reservationId);
         return Result.success();
     }

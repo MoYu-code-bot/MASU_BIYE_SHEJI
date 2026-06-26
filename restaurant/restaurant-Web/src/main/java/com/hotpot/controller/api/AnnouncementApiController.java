@@ -4,8 +4,8 @@ import com.hotpot.common.Result;
 import com.hotpot.entity.Announcement;
 import com.hotpot.service.AnnouncementService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +23,8 @@ public class AnnouncementApiController {
     private final AnnouncementService announcementService;
 
     @ApiOperation("获取公告列表")
-    @ApiImplicitParam(name = "storeId", value = "门店ID", required = true, dataType = "long", paramType = "query")
     @GetMapping("/list")
-    public Result<List<Announcement>> list(@RequestParam Long storeId) {
+    public Result<List<Announcement>> list(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(announcementService.listByStoreId(storeId));
     }
 }

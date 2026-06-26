@@ -23,15 +23,15 @@ public class AuthApiController {
 
     private final CustomerService customerService;
 
+    @PostMapping("login")
     @ApiOperation("会员登录")
-    @PostMapping("/login")
     public Result<String> login(@ApiParam("登录请求") @Valid @RequestBody MemberLoginRequest request) {
         String token = customerService.login(request.getPhone(), request.getPassword());
         return Result.success(token);
     }
 
+    @PostMapping("register")
     @ApiOperation("会员注册")
-    @PostMapping("/register")
     public Result<String> register(@ApiParam("注册请求") @Valid @RequestBody MemberRegisterRequest request) {
         String token = customerService.register(request.getPhone(), request.getPassword(), request.getNickname());
         return Result.success(token);

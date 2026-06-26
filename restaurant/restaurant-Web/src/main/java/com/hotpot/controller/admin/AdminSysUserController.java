@@ -44,8 +44,8 @@ public class AdminSysUserController {
         return "STAFF";
     }
 
+    @GetMapping("list")
     @ApiOperation("分页查询用户（MANAGER不可见ADMIN）")
-    @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public Result<PageResult<SysUser>> page(@ApiParam("分页参数") PageQuery query) {
         String role = getCurrentRole();
@@ -59,8 +59,8 @@ public class AdminSysUserController {
         return Result.success(PageResult.of(sysUserService.page(page, wrapper)));
     }
 
+    @PostMapping("create")
     @ApiOperation("新增用户（仅ADMIN可新增任意角色，MANAGER只能新增STAFF）")
-    @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public Result<?> create(@ApiParam("用户信息") @RequestBody SysUser sysUser) {
         String currentRole = getCurrentRole();
@@ -80,8 +80,8 @@ public class AdminSysUserController {
         return Result.success("创建成功");
     }
 
-    @ApiOperation("修改用户信息（不可修改ADMIN角色，不可降级其他ADMIN）")
     @PutMapping("/{userId}")
+    @ApiOperation("修改用户信息（不可修改ADMIN角色，不可降级其他ADMIN）")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public Result<?> update(@ApiParam("用户ID") @PathVariable Long userId,
                             @ApiParam("用户更新信息") @RequestBody SysUser updateInfo) {
@@ -114,8 +114,8 @@ public class AdminSysUserController {
         return Result.success("修改成功");
     }
 
-    @ApiOperation("删除用户（不可删除ADMIN）")
     @DeleteMapping("/{userId}")
+    @ApiOperation("删除用户（不可删除ADMIN）")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<?> delete(@ApiParam("用户ID") @PathVariable Long userId) {
         SysUser target = sysUserService.getById(userId);
@@ -129,8 +129,8 @@ public class AdminSysUserController {
         return Result.success("删除成功");
     }
 
-    @ApiOperation("修改用户状态（启用/禁用）")
     @PutMapping("/updateStatus")
+    @ApiOperation("修改用户状态（启用/禁用）")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public Result<?> updateStatus(@ApiParam("用户ID") @RequestParam Long userId,
                                   @ApiParam("状态：1-启用，0-禁用") @RequestParam Integer status) {

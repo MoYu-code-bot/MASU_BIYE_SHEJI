@@ -21,8 +21,8 @@ public class ReservationApiController {
 
     private final ReservationService reservationService;
 
+    @PostMapping("create")
     @ApiOperation("创建预订")
-    @PostMapping
     public Result<String> create(@ApiParam("预订信息") @RequestBody Reservation reservation,
                                   @ApiIgnore Authentication authentication) {
         Long customerId = Long.parseLong(authentication.getName());
@@ -31,21 +31,21 @@ public class ReservationApiController {
         return Result.success(orderNo);
     }
 
+    @GetMapping("list")
     @ApiOperation("我的预订列表")
-    @GetMapping
     public Result<List<Reservation>> list(@ApiIgnore Authentication authentication) {
         Long customerId = Long.parseLong(authentication.getName());
         return Result.success(reservationService.listByCustomerId(customerId));
     }
 
+    @GetMapping("detail")
     @ApiOperation("预订详情")
-    @GetMapping("/detail")
     public Result<Reservation> detail(@ApiParam("预订ID") @RequestParam Long reservationId) {
         return Result.success(reservationService.getById(reservationId));
     }
 
+    @PutMapping("cancel")
     @ApiOperation("取消预订")
-    @PutMapping("/cancel")
     public Result<?> cancel(@ApiParam("预订ID") @RequestParam Long reservationId,
                             @ApiParam("取消原因") @RequestParam(required = false) String reason,
                             @ApiIgnore Authentication authentication) {

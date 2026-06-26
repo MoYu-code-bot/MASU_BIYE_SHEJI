@@ -19,21 +19,21 @@ public class AdminStoreController {
 
     private final StoreService storeService;
 
+    @GetMapping("list")
     @ApiOperation("分页查询门店")
-    @GetMapping
     public Result<PageResult<Store>> page(@ApiParam("分页参数") PageQuery query) {
         return Result.success(storeService.pageQuery(query));
     }
 
+    @PostMapping("create")
     @ApiOperation("新增门店")
-    @PostMapping
     public Result<?> add(@ApiParam("门店信息") @RequestBody Store store) {
         storeService.save(store);
         return Result.success();
     }
 
+    @PutMapping("update")
     @ApiOperation("修改门店")
-    @PutMapping("/update")
     public Result<?> update(@ApiParam("门店ID") @RequestParam Long storeId,
                             @ApiParam("门店信息") @RequestBody Store store) {
         store.setId(storeId);
@@ -41,8 +41,8 @@ public class AdminStoreController {
         return Result.success();
     }
 
+    @DeleteMapping("delete")
     @ApiOperation("删除门店")
-    @DeleteMapping("/delete")
     public Result<?> delete(@ApiParam("门店ID") @RequestParam Long storeId) {
         storeService.removeById(storeId);
         return Result.success();

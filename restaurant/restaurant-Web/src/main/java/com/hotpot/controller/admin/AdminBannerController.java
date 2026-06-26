@@ -19,21 +19,21 @@ public class AdminBannerController {
 
     private final BannerService bannerService;
 
+    @GetMapping("list")
     @ApiOperation("查询全部轮播图")
-    @GetMapping
     public Result<List<Banner>> list() {
         return Result.success(bannerService.list());
     }
 
+    @PostMapping("create")
     @ApiOperation("新增轮播图")
-    @PostMapping
     public Result<?> add(@ApiParam("轮播图信息") @RequestBody Banner banner) {
         bannerService.save(banner);
         return Result.success();
     }
 
+    @PutMapping("update")
     @ApiOperation("修改轮播图")
-    @PutMapping("/update")
     public Result<?> update(@ApiParam("轮播图ID") @RequestParam Long bannerId,
                             @ApiParam("轮播图信息") @RequestBody Banner banner) {
         banner.setId(bannerId);
@@ -41,8 +41,8 @@ public class AdminBannerController {
         return Result.success();
     }
 
+    @DeleteMapping("delete")
     @ApiOperation("删除轮播图")
-    @DeleteMapping("/delete")
     public Result<?> delete(@ApiParam("轮播图ID") @RequestParam Long bannerId) {
         bannerService.removeById(bannerId);
         return Result.success();

@@ -20,8 +20,8 @@ public class  AdminAnnouncementController {
 
     private final AnnouncementService announcementService;
 
+    @GetMapping("list")
     @ApiOperation("查询公告列表")
-    @GetMapping
     public Result<List<Announcement>> list(@ApiParam("门店ID") @RequestParam(required = false) Long storeId) {
         if (storeId != null) {
             return Result.success(announcementService.list(
@@ -32,15 +32,15 @@ public class  AdminAnnouncementController {
         return Result.success(announcementService.list());
     }
 
+    @PostMapping("create")
     @ApiOperation("新增公告")
-    @PostMapping
     public Result<?> add(@ApiParam("公告信息") @RequestBody Announcement announcement) {
         announcementService.save(announcement);
         return Result.success();
     }
 
+    @PutMapping("update")
     @ApiOperation("修改公告")
-    @PutMapping("/update")
     public Result<?> update(@ApiParam("公告ID") @RequestParam Long announcementId,
                             @ApiParam("公告信息") @RequestBody Announcement announcement) {
         announcement.setId(announcementId);
@@ -48,8 +48,8 @@ public class  AdminAnnouncementController {
         return Result.success();
     }
 
+    @DeleteMapping("delete")
     @ApiOperation("删除公告")
-    @DeleteMapping("/delete")
     public Result<?> delete(@ApiParam("公告ID") @RequestParam Long announcementId) {
         announcementService.removeById(announcementId);
         return Result.success();

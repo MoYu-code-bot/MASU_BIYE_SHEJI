@@ -20,8 +20,8 @@ public class CategoryApiController {
 
     private final CategoryService categoryService;
 
+    @GetMapping("list")
     @ApiOperation("获取分类列表")
-    @GetMapping
     public Result<List<Category>> list() {
         return Result.success(categoryService.listByStoreId(null));
     }

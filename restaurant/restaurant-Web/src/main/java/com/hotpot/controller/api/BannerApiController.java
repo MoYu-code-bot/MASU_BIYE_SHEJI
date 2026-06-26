@@ -20,8 +20,8 @@ public class BannerApiController {
 
     private final BannerService bannerService;
 
+    @GetMapping("list")
     @ApiOperation("获取轮播图列表")
-    @GetMapping
     public Result<List<Banner>> list() {
         return Result.success(bannerService.listVisible());
     }

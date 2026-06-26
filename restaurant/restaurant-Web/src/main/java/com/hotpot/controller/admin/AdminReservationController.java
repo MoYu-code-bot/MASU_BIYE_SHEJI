@@ -24,8 +24,8 @@ public class AdminReservationController {
 
     private final ReservationService reservationService;
 
+    @GetMapping("list")
     @ApiOperation("分页查询预订")
-    @GetMapping
     public Result<PageResult<Reservation>> page(@ApiParam("分页参数") PageQuery query,
                                                 @ApiParam("门店ID") @RequestParam(required = false) Long storeId,
                                                 @ApiParam("预订状态") @RequestParam(required = false) Integer status,
@@ -45,36 +45,36 @@ public class AdminReservationController {
         return Result.success(PageResult.of(reservationService.page(page, wrapper)));
     }
 
+    @PutMapping("confirm")
     @ApiOperation("确认预订")
-    @PutMapping("/confirm")
     public Result<?> confirm(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.confirm(reservationId);
         return Result.success();
     }
 
+    @PutMapping("reject")
     @ApiOperation("拒绝预订")
-    @PutMapping("/reject")
     public Result<?> reject(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.reject(reservationId);
         return Result.success();
     }
 
+    @PutMapping("arrive")
     @ApiOperation("到店确认")
-    @PutMapping("/arrive")
     public Result<?> arrive(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.arrive(reservationId);
         return Result.success();
     }
 
+    @PutMapping("complete")
     @ApiOperation("完成预订")
-    @PutMapping("/complete")
     public Result<?> complete(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.complete(reservationId);
         return Result.success();
     }
 
+    @PutMapping("noshow")
     @ApiOperation("标记未到店")
-    @PutMapping("/noshow")
     public Result<?> noShow(@ApiParam("预订ID") @RequestParam Long reservationId) {
         reservationService.noShow(reservationId);
         return Result.success();

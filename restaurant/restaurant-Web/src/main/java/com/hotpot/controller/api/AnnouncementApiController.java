@@ -22,8 +22,8 @@ public class AnnouncementApiController {
 
     private final AnnouncementService announcementService;
 
+    @GetMapping("list")
     @ApiOperation("获取公告列表")
-    @GetMapping("/list")
     public Result<List<Announcement>> list(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(announcementService.listByStoreId(storeId));
     }

@@ -19,8 +19,8 @@ public class AdminDishController {
 
     private final DishService dishService;
 
+    @GetMapping("list")
     @ApiOperation("分页查询菜品")
-    @GetMapping
     public Result<PageResult<Dish>> page(@ApiParam("分页参数") PageQuery query,
                                          @ApiParam("分类ID") @RequestParam(required = false) Long categoryId,
                                          @ApiParam("门店ID") @RequestParam(required = false) Long storeId,
@@ -28,15 +28,15 @@ public class AdminDishController {
         return Result.success(dishService.pageQuery(query, categoryId, storeId, status));
     }
 
+    @PostMapping("create")
     @ApiOperation("新增菜品")
-    @PostMapping
     public Result<?> add(@ApiParam("菜品信息") @RequestBody Dish dish) {
         dishService.save(dish);
         return Result.success();
     }
 
+    @PutMapping("update")
     @ApiOperation("修改菜品")
-    @PutMapping("/update")
     public Result<?> update(@ApiParam("菜品ID") @RequestParam Long dishId,
                             @ApiParam("菜品信息") @RequestBody Dish dish) {
         dish.setId(dishId);
@@ -44,8 +44,8 @@ public class AdminDishController {
         return Result.success();
     }
 
+    @PutMapping("updateStatus")
     @ApiOperation("菜品上下架")
-    @PutMapping("/updateStatus")
     public Result<?> updateStatus(@ApiParam("菜品ID") @RequestParam Long dishId,
                                   @ApiParam("状态：1-上架，0-下架") @RequestParam Integer status) {
         Dish dish = new Dish();
@@ -55,8 +55,8 @@ public class AdminDishController {
         return Result.success();
     }
 
+    @DeleteMapping("delete")
     @ApiOperation("删除菜品")
-    @DeleteMapping("/delete")
     public Result<?> delete(@ApiParam("菜品ID") @RequestParam Long dishId) {
         dishService.removeById(dishId);
         return Result.success();

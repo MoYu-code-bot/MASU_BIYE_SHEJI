@@ -23,8 +23,8 @@ public class AdminAuthController {
 
     private final SysUserService sysUserService;
 
+    @PostMapping("login")
     @ApiOperation("管理员登录")
-    @PostMapping("/login")
     public Result<LoginVO> login(@ApiParam("登录请求") @Valid @RequestBody LoginRequest request) {
         LoginVO vo = sysUserService.login(request);
         return Result.success(vo);

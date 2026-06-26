@@ -21,8 +21,8 @@ public class AdminReviewController {
 
     private final ReviewService reviewService;
 
+    @GetMapping("list")
     @ApiOperation("分页查询评价")
-    @GetMapping
     public Result<PageResult<Review>> page(@ApiParam("分页参数") PageQuery query,
                                            @ApiParam("门店ID") @RequestParam(required = false) Long storeId) {
         Page<Review> page = new Page<>(query.getPageNum(), query.getPageSize());
@@ -34,8 +34,8 @@ public class AdminReviewController {
         return Result.success(PageResult.of(reviewService.page(page, wrapper)));
     }
 
+    @PutMapping("updateVisible")
     @ApiOperation("修改评价可见状态")
-    @PutMapping("/updateVisible")
     public Result<?> updateVisible(@ApiParam("评价ID") @RequestParam Long reviewId,
                                    @ApiParam("是否可见：1-可见，0-不可见") @RequestParam Integer isVisible) {
         Review review = new Review();

@@ -19,21 +19,21 @@ public class AdminCategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping("list")
     @ApiOperation("查询全部分类")
-    @GetMapping
     public Result<List<Category>> list() {
         return Result.success(categoryService.listAll());
     }
 
+    @PostMapping("create")
     @ApiOperation("新增分类")
-    @PostMapping
     public Result<?> add(@ApiParam("分类信息") @RequestBody Category category) {
         categoryService.save(category);
         return Result.success();
     }
 
+    @PutMapping("update")
     @ApiOperation("修改分类")
-    @PutMapping("/update")
     public Result<?> update(@ApiParam("分类ID") @RequestParam Long categoryId,
                             @ApiParam("分类信息") @RequestBody Category category) {
         category.setId(categoryId);
@@ -41,8 +41,8 @@ public class AdminCategoryController {
         return Result.success();
     }
 
+    @DeleteMapping("delete")
     @ApiOperation("删除分类")
-    @DeleteMapping("/delete")
     public Result<?> delete(@ApiParam("分类ID") @RequestParam Long categoryId) {
         categoryService.removeById(categoryId);
         return Result.success();

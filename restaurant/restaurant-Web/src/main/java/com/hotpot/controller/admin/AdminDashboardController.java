@@ -27,8 +27,8 @@ public class AdminDashboardController {
     private final ReservationService reservationService;
     private final CustomerService customerService;
 
+    @GetMapping("overview")
     @ApiOperation("首页数据概览")
-    @GetMapping
     public Result<DashboardVO> dashboard() {
         DashboardVO vo = new DashboardVO();
         vo.setTotalStores(storeService.count());

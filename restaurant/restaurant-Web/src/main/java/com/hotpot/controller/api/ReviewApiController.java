@@ -22,8 +22,8 @@ public class ReviewApiController {
 
     private final ReviewService reviewService;
 
+    @PostMapping("create")
     @ApiOperation("提交评价")
-    @PostMapping
     public Result<?> create(@ApiParam("评价信息") @RequestBody Review review,
                             @ApiIgnore Authentication authentication) {
         Long customerId = Long.parseLong(authentication.getName());

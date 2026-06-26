@@ -31,32 +31,32 @@ public class StoreApiController {
     private final TimeSlotService timeSlotService;
     private final ReviewService reviewService;
 
+    @GetMapping("list")
     @ApiOperation("获取全部门店")
-    @GetMapping("/list")
     public Result<List<Store>> list() {
         return Result.success(storeService.listAll());
     }
 
+    @GetMapping("detail")
     @ApiOperation("门店详情")
-    @GetMapping("/detail")
     public Result<Store> detail(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(storeService.getById(storeId));
     }
 
+    @GetMapping("dishes")
     @ApiOperation("门店菜品")
-    @GetMapping("/dishes")
     public Result<List<Dish>> dishes(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(dishService.listByStoreId(storeId));
     }
 
+    @GetMapping("slots")
     @ApiOperation("门店时段")
-    @GetMapping("/slots")
     public Result<List<TimeSlot>> slots(@ApiParam("门店ID") @RequestParam Long storeId) {
         return Result.success(timeSlotService.listByStoreId(storeId));
     }
 
+    @GetMapping("reviews")
     @ApiOperation("门店评价")
-    @GetMapping("/reviews")
     public Result<List<Review>> reviews(@ApiParam("门店ID") @RequestParam Long storeId,
                                         @ApiParam("页码") @RequestParam(defaultValue = "1") Integer pageNum,
                                         @ApiParam("每页条数") @RequestParam(defaultValue = "10") Integer pageSize) {

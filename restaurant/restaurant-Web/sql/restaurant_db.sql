@@ -413,5 +413,3 @@ INSERT INTO `announcement` (`store_id`, `title`, `content`, `status`) VALUES
 -- 三、增量DDL（已有数据库执行以下SQL即可）
 -- ============================================================
 
--- 预订表增加套餐ID字段
-ALTER TABLE `reservation` ADD COLUMN `dish_id` bigint DEFAULT NULL COMMENT '预订套餐ID' AFTER `customer_phone`;

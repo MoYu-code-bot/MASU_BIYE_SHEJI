@@ -100,7 +100,7 @@ const handleAdminLogin = async () => {
       storeId: data.storeId,
       avatar: data.avatar
     }))
-    ElMessage.success({ message: '登录成功', duration: 3000 })
+    ElMessage.success({ message: '登录成功', duration: 1500 })
     router.push('/admin/dashboard')
   } catch (e) {
     ElMessage.error('登录失败，请检查用户名和密码')
@@ -118,7 +118,7 @@ const handleCustomerLogin = async () => {
     localStorage.setItem('token', token)
     localStorage.setItem('role', 'CUSTOMER')
     localStorage.setItem('customerPhone', customerForm.value.phone)
-    ElMessage.success({ message: '登录成功', duration: 3000 })
+    ElMessage.success({ message: '登录成功', duration: 1500 })
     router.push('/c')
   } catch (e) {
     ElMessage.error('登录失败，请检查手机号和密码')
